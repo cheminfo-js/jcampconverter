@@ -356,11 +356,12 @@ function getConverter() {
         var length = spectra.length;
         var gcms = {
             times: new Array(length),
-            series: [{
-                name: 'ms',
-                dimension: 2,
-                data: new Array(length)
-            }]
+            series: {
+                ms: {
+                    dimension: 2,
+                    data: new Array(length)
+                }
+            }
         };
 
         var i;
@@ -369,11 +370,10 @@ function getConverter() {
             var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
             if (spectra[0][label]) {
                 existingGCMSFields.push(label);
-                gcms.series.push({
-                    name: label,
+                gcms.series[label] = {
                     dimension: 1,
                     data: new Array(length)
-                });
+                };
             }
         }
 
@@ -381,10 +381,10 @@ function getConverter() {
             var spectrum = spectra[i];
             gcms.times[i] = spectrum.pageValue;
             for (var j = 0; j < existingGCMSFields.length; j++) {
-                gcms.series[j + 1].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
+                gcms.series[existingGCMSFields[j]].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
             }
             if (spectrum.data) {
-                gcms.series[0].data[i] = [spectrum.data[0].x, spectrum.data[0].y];
+                gcms.series.ms.data[i] = [spectrum.data[0].x, spectrum.data[0].y];
             }
 
         }

@@ -25,11 +25,11 @@ describe('Test JCAMP converter of GCMS', () => {
 
         // Check content
         expect(gcms.times).toBeInstanceOf(Array);
-        expect(gcms.series).toBeInstanceOf(Array);
-        expect(gcms.series.length).toBe(3); // ms, tic, scannumber
-
+        expect(gcms.series).toBeInstanceOf(Object);
         // Check length
         expect(gcms.times.length).toBe(2420);
-        expect(gcms.series[0].data.length).toBe(2420);
+        expect(gcms.series.ms.data.length).toBe(2420);
+        expect(gcms.series.tic.data.length).toBe(2420);
+        expect(gcms.series.scannumber.data.length).toBe(2420);
     });
 });
