@@ -1,6 +1,6 @@
-.idea
 node_modules
-.DS_Store
+.idea
+logs
 *.log
-code.asm
-hydrogen*.cfg
+npm-debug.log*
+coverage

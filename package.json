@@ -3,15 +3,15 @@
   "version": "2.7.0",
   "description": "Parse and convert JCAMP data",
   "main": "./src/index.js",
-  "directories": {
-    "lib": "src",
-    "test": "test"
-  },
   "files": [
     "src"
   ],
   "scripts": {
-    "test": "mocha --require should --reporter mocha-better-spec-reporter --recursive",
+    "eslint": "eslint src test",
+    "eslint-fix": "npm run eslint -- --fix",
+    "test": "run-s testonly eslint",
+    "test-travis": "eslint src && jest --coverage && codecov",
+    "testonly": "jest",
     "build": "cheminfo build --root JcampConverter",
     "benchmark": "node benchmark/benchmark.js",
     "deopt": "node --trace-opt --trace-deopt --code-comments debug/deoptimize.js > deopt.log",
@@ -30,12 +30,18 @@
   "bugs": {
     "url": "https://github.com/cheminfo-js/jcampconverter/issues"
   },
-  "homepage": "https://github.com/cheminfo-js/jcampconverter",
+  "homepage": "https://github.com/cheminfo-js/jcampconverter#readme",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "devDependencies": {
-    "benchmark": "^2.1.0",
-    "cheminfo-tools": "^1.0.2",
-    "mocha": "^2.2.5",
-    "mocha-better-spec-reporter": "^2.1.1",
-    "should": "^7.0.2"
+    "benchmark": "^2.1.4",
+    "cheminfo-tools": "^1.19.2",
+    "codecov": "^2.2.0",
+    "eslint": "^4.3.0",
+    "eslint-config-cheminfo": "^1.8.0",
+    "eslint-plugin-no-only-tests": "^2.0.0",
+    "jest": "^20.0.4",
+    "npm-run-all": "^4.0.2"
   }
 }

@@ -4,7 +4,7 @@ var fs = require('fs');
 var join = require('path').join;
 var convert = require('../').convert;
 
-var datafolder = join(__dirname, '../test/data');
+var datafolder = join(__dirname, '../__tests__/data');
 
 module.exports = function (filename, options) {
     var jcamp = fs.readFileSync(join(datafolder, filename), 'utf-8');

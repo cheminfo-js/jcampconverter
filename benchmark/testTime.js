@@ -5,7 +5,7 @@ var fs = require('fs');
 
 function checkJcamp(filename, label, options) {
 
-    var result = Converter.convert(fs.readFileSync(__dirname + "/../test" + filename).toString(), options);
+    var result = Converter.convert(fs.readFileSync(__dirname + "/../__tests__" + filename).toString(), options);
 
     console.log("===================",label)
     console.log(result.profiling);

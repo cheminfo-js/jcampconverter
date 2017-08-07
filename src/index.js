@@ -1,14 +1,9 @@
 'use strict';
 
-var parseXYDataRegExp = require('./parseXYData.js');
-
-
 function getConverter() {
-
     // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
-    var ntuplesSeparator = /[, \t]{1,}/;
-
-    var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
+    const ntuplesSeparator = /[, \t]+/;
+    const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
     function convertToFloatArray(stringArray) {
         var l = stringArray.length;
@@ -18,26 +13,30 @@ function getConverter() {
         }
         return floatArray;
     }
-    
-    function Spectrum() {
-        
-    }
+
+    class Spectrum {}
+
+    const defaultOptions = {
+        keepRecordsRegExp: /^$/,
+        xy: false,
+        withoutXY: false,
+        newGCMS: false,
+        keepSpectra: false,
+        noContour: false,
+        nbContourLevels: 7,
+        noiseMultiplier: 5
+    };
 
     function convert(jcamp, options) {
-        options = options || {};
+        options = Object.assign({}, defaultOptions, options);
 
-        var keepRecordsRegExp = /^$/;
-        if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
         var wantXY = !options.withoutXY;
 
         var start = Date.now();
 
-        var ntuples = {},
-            ldr,
-            dataLabel,
-            dataValue,
-            ldrs,
-            i, ii, position, endLine, infos;
+        var ntuples = {};
+        var ldr, dataLabel, dataValue, ldrs;
+        var i, ii, j, position, endLine, infos;
 
         var result = {};
         result.profiling = [];
@@ -47,20 +46,25 @@ function getConverter() {
         result.info = {};
         var spectrum = new Spectrum();
 
-        if (!(typeof jcamp === 'string')) return result;
-        // console.time('start');
+        if (!(typeof jcamp === 'string')) {
+            throw new TypeError('the JCAMP should be a string');
+        }
 
-        if (result.profiling) result.profiling.push({
-            action: 'Before split to LDRS',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Before split to LDRS',
+                time: Date.now() - start
+            });
+        }
 
         ldrs = jcamp.split(/[\r\n]+##/);
 
-        if (result.profiling) result.profiling.push({
-            action: 'Split to LDRS',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Split to LDRS',
+                time: Date.now() - start
+            });
+        }
 
         if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -131,14 +135,10 @@ function getConverter() {
                     prepareSpectrum(result, spectrum);
                     // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                     if (dataValue.match(/.*\+\+.*/)) {
-                        if (options.fastParse === false) {
-                            parseXYDataRegExp(spectrum, dataValue, result);
-                        } else {
-                            if (!spectrum.deltaX) {
-                                spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-                            }
-                            fastParseXYData(spectrum, dataValue, result);
+                        if (!spectrum.deltaX) {
+                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
                         }
+                        fastParseXYData(spectrum, dataValue, result);
                     } else {
                         parsePeakTable(spectrum, dataValue, result);
                     }
@@ -195,10 +195,10 @@ function getConverter() {
             } else if (dataLabel === '$SFO2') {
                 if (!result.indirectFrequency) result.indirectFrequency = parseFloat(dataValue);
 
-            } else if (dataLabel === '$OFFSET') {   // OFFSET for Bruker spectra
+            } else if (dataLabel === '$OFFSET') { // OFFSET for Bruker spectra
                 result.shiftOffsetNum = 0;
-                if (!result.shiftOffsetVal)  result.shiftOffsetVal = parseFloat(dataValue);
-            } else if (dataLabel === '$REFERENCEPOINT') {   // OFFSET for Varian spectra
+                if (!result.shiftOffsetVal) result.shiftOffsetVal = parseFloat(dataValue);
+            } else if (dataLabel === '$REFERENCEPOINT') { // OFFSET for Varian spectra
 
 
                 // if we activate this part it does not work for ACD specmanager
@@ -235,7 +235,7 @@ function getConverter() {
             } else if (dataLabel === 'PAGE') {
                 spectrum.page = dataValue.trim();
                 spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
-                spectrum.pageSymbol = spectrum.page.replace(/=.*/, '');
+                spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
                 var pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
                 var unit = '';
                 if (ntuples.units && ntuples.units[pageSymbolIndex]) {
@@ -249,23 +249,25 @@ function getConverter() {
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
             }
-            if (dataLabel.match(keepRecordsRegExp)) {
+            if (dataLabel.match(options.keepRecordsRegExp)) {
                 result.info[dataLabel] = dataValue.trim();
             }
         }
 
-        if (result.profiling) result.profiling.push({
-            action: 'Finished parsing',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Finished parsing',
+                time: Date.now() - start
+            });
+        }
 
         if (Object.keys(ntuples).length > 0) {
             var newNtuples = [];
             var keys = Object.keys(ntuples);
-            for (var i = 0; i < keys.length; i++) {
+            for (i = 0; i < keys.length; i++) {
                 var key = keys[i];
                 var values = ntuples[key];
-                for (var j = 0; j < values.length; j++) {
+                for (j = 0; j < values.length; j++) {
                     if (!newNtuples[j]) newNtuples[j] = {};
                     newNtuples[j][key] = values[j];
                 }
@@ -275,10 +277,12 @@ function getConverter() {
 
         if (result.twoD && wantXY) {
             add2D(result, options);
-            if (result.profiling) result.profiling.push({
-                action: 'Finished countour plot calculation',
-                time: Date.now() - start
-            });
+            if (result.profiling) {
+                result.profiling.push({
+                    action: 'Finished countour plot calculation',
+                    time: Date.now() - start
+                });
+            }
             if (!options.keepSpectra) {
                 delete result.spectra;
             }
@@ -291,10 +295,10 @@ function getConverter() {
 
         if (options.xy && wantXY) { // the spectraData should not be a oneD array but an object with x and y
             if (spectra.length > 0) {
-                for (var i = 0; i < spectra.length; i++) {
-                    var spectrum = spectra[i];
+                for (i = 0; i < spectra.length; i++) {
+                    spectrum = spectra[i];
                     if (spectrum.data.length > 0) {
-                        for (var j = 0; j < spectrum.data.length; j++) {
+                        for (j = 0; j < spectrum.data.length; j++) {
                             var data = spectrum.data[j];
                             var newData = {
                                 x: new Array(data.length / 2),
@@ -320,10 +324,12 @@ function getConverter() {
             } else {
                 addGCMS(result);
             }
-            if (result.profiling) result.profiling.push({
-                action: 'Finished GCMS calculation',
-                time: Date.now() - start
-            });
+            if (result.profiling) {
+                result.profiling.push({
+                    action: 'Finished GCMS calculation',
+                    time: Date.now() - start
+                });
+            }
         }
 
         if (result.profiling) {
@@ -485,8 +491,6 @@ function getConverter() {
     function generateContourLines(zData, options) {
         var noise = zData.noise;
         var z = zData.z;
-        var nbLevels = options.nbContourLevels || 7;
-        var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
         var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
         var isOver0, isOver1, isOver2, isOver3;
         var nbSubSpectra = z.length;
@@ -513,18 +517,18 @@ function getConverter() {
         //
         // ---------------------d------
 
-        var iter = nbLevels * 2;
+        var iter = options.nbContourLevels * 2;
         var contourLevels = new Array(iter);
         var lineZValue;
         for (var level = 0; level < iter; level++) { // multiply by 2 for positif and negatif
             var contourLevel = {};
             contourLevels[level] = contourLevel;
             var side = level % 2;
-            var factor = (maxZ - noiseMultiplier * noise) * Math.exp((level >> 1) - nbLevels);
+            var factor = (maxZ - options.noiseMultiplier * noise) * Math.exp((level >> 1) - options.nbContourLevels);
             if (side === 0) {
-                lineZValue = factor + noiseMultiplier * noise;
+                lineZValue = factor + options.noiseMultiplier * noise;
             } else {
-                lineZValue = (0 - factor) - noiseMultiplier * noise;
+                lineZValue = (0 - factor) - options.noiseMultiplier * noise;
             }
             var lines = [];
             contourLevel.zValue = lineZValue;
@@ -641,8 +645,9 @@ function getConverter() {
         // we skip the first line
         //
         var endLine = false;
+        var ascii;
         for (var i = 0; i < value.length; i++) {
-            var ascii = value.charCodeAt(i);
+            ascii = value.charCodeAt(i);
             if (ascii === 13 || ascii === 10) {
                 endLine = true;
             } else {
@@ -662,7 +667,6 @@ function getConverter() {
         var inValue = false;
         var skipFirstValue = false;
         var decimalPosition = 0;
-        var ascii;
         for (; i <= value.length; i++) {
             if (i === value.length) ascii = 13;
             else ascii = value.charCodeAt(i);
@@ -837,8 +841,8 @@ function JcampConverter(input, options, useWorker) {
     }
 }
 
-var stamps = {},
-    worker;
+var stamps = {};
+var worker;
 
 function postToWorker(input, options) {
     if (!worker) {
