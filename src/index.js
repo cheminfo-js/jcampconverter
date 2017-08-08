@@ -288,8 +288,7 @@ function getConverter() {
             }
         }
 
-        var isGCMS = ((spectra.length > 0) && (!spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
-        if ((spectra.length > 1) && isGCMS && options.chromatogram) {
+        if (options.chromatogram) {
             options.xy = true;
         }
 
@@ -318,19 +317,15 @@ function getConverter() {
         }
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (isGCMS && wantXY) {
-            if (options.chromatogram) {
-                if (result.spectra.length > 1) {
-                    complexChromatogram(result);
-                } else {
-                    simpleChromatogram(result);
-                }
+        if (options.chromatogram) {
+            if (result.spectra.length > 1) {
+                complexChromatogram(result);
             } else {
-                addGCMS(result);
+                simpleChromatogram(result);
             }
             if (result.profiling) {
                 result.profiling.push({
-                    action: 'Finished GCMS calculation',
+                    action: 'Finished chromatogram calculation',
                     time: Date.now() - start
                 });
             }
@@ -397,52 +392,15 @@ function getConverter() {
 
     function simpleChromatogram(result) {
         var data = result.spectra[0].data[0];
-        var times = [];
-        var intensity = [];
-
-        for (var i = 0; i < data.length; i += 2) {
-            times.push(data[i]);
-            intensity.push(data[i + 1]);
-        }
-
         result.chromatogram = {
-            times: times,
+            times: data.x.slice(),
             series: {
                 intensity: {
                     dimension: 1,
-                    data: intensity
+                    data: data.y.slice()
                 }
             }
         };
-    }
-
-    function addGCMS(result) {
-        var spectra = result.spectra;
-        var existingGCMSFields = [];
-        var i;
-        for (i = 0; i < GC_MS_FIELDS.length; i++) {
-            var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
-            if (spectra[0][label]) {
-                existingGCMSFields.push(label);
-            }
-        }
-        if (existingGCMSFields.length === 0) return;
-        var gcms = {};
-        gcms.gc = {};
-        gcms.ms = [];
-        for (i = 0; i < existingGCMSFields.length; i++) {
-            gcms.gc[existingGCMSFields[i]] = [];
-        }
-        for (i = 0; i < spectra.length; i++) {
-            var spectrum = spectra[i];
-            for (var j = 0; j < existingGCMSFields.length; j++) {
-                gcms.gc[existingGCMSFields[j]].push(spectrum.pageValue);
-                gcms.gc[existingGCMSFields[j]].push(parseFloat(spectrum[existingGCMSFields[j]]));
-            }
-            if (spectrum.data) gcms.ms[i] = spectrum.data[0];
-
-        }
-        result.gcms = gcms;
     }
 
     function prepareSpectrum(result, spectrum) {
