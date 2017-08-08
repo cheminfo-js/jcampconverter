@@ -36,7 +36,7 @@ __Options__
 * keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^$/} (nothing is kept)
 * xy - instead of creating a 1D array containing [x1,y1,x2,y2, ...] create an object: {x:[], y:[]}
 * withoutXY - do not parse XYDATA or PEAKTABLE fields. Useful to only extract metadata fields (combine this option with `keepRecordsRegExp`)
-* newGCMS - use the new GC/MS data format output (default: false)
+* chromatogram - use the new GC/MS data format output (default: false)
 
 2D NMR options:
 * noContour - if true, the contour levels will not be generated. Instead the raw data will be available in `result.minMax.z` (default: false)

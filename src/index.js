@@ -20,7 +20,7 @@ function getConverter() {
         keepRecordsRegExp: /^$/,
         xy: false,
         withoutXY: false,
-        newGCMS: false,
+        chromatogram: false,
         keepSpectra: false,
         noContour: false,
         nbContourLevels: 7,
@@ -288,8 +288,8 @@ function getConverter() {
             }
         }
 
-        var isGCMS = (spectra.length > 1 && (!spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
-        if (isGCMS && options.newGCMS) {
+        var isGCMS = ((spectra.length > 0) && (!spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
+        if ((spectra.length > 1) && isGCMS && options.chromatogram) {
             options.xy = true;
         }
 
@@ -319,8 +319,12 @@ function getConverter() {
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
         if (isGCMS && wantXY) {
-            if (options.newGCMS) {
-                addNewGCMS(result);
+            if (options.chromatogram) {
+                if (result.spectra.length > 1) {
+                    complexChromatogram(result);
+                } else {
+                    simpleChromatogram(result);
+                }
             } else {
                 addGCMS(result);
             }
@@ -351,10 +355,10 @@ function getConverter() {
         return GC_MS_FIELDS.indexOf(dataLabel) !== -1;
     }
 
-    function addNewGCMS(result) {
+    function complexChromatogram(result) {
         var spectra = result.spectra;
         var length = spectra.length;
-        var gcms = {
+        var chromatogram = {
             times: new Array(length),
             series: {
                 ms: {
@@ -370,7 +374,7 @@ function getConverter() {
             var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
             if (spectra[0][label]) {
                 existingGCMSFields.push(label);
-                gcms.series[label] = {
+                chromatogram.series[label] = {
                     dimension: 1,
                     data: new Array(length)
                 };
@@ -379,16 +383,37 @@ function getConverter() {
 
         for (i = 0; i < length; i++) {
             var spectrum = spectra[i];
-            gcms.times[i] = spectrum.pageValue;
+            chromatogram.times[i] = spectrum.pageValue;
             for (var j = 0; j < existingGCMSFields.length; j++) {
-                gcms.series[existingGCMSFields[j]].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
+                chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
             }
             if (spectrum.data) {
-                gcms.series.ms.data[i] = [spectrum.data[0].x, spectrum.data[0].y];
+                chromatogram.series.ms.data[i] = [spectrum.data[0].x, spectrum.data[0].y];
             }
 
         }
-        result.gcms = gcms;
+        result.chromatogram = chromatogram;
+    }
+
+    function simpleChromatogram(result) {
+        var data = result.spectra[0].data[0];
+        var times = [];
+        var intensity = [];
+
+        for (var i = 0; i < data.length; i += 2) {
+            times.push(data[i]);
+            intensity.push(data[i + 1]);
+        }
+
+        result.chromatogram = {
+            times: times,
+            series: {
+                intensity: {
+                    dimension: 1,
+                    data: intensity
+                }
+            }
+        };
     }
 
     function addGCMS(result) {
