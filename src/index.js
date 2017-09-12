@@ -857,6 +857,47 @@ function createWorker() {
     });
 }
 
+function createTree(jcamp) {
+    if (typeof jcamp !== 'string') {
+        throw new TypeError('the JCAMP should be a string');
+    }
+
+    var lines = jcamp.split(/[\r\n]+/);
+
+    var stack = [];
+    var result = [];
+    var current;
+
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (line.substring(0, 7) === '##TITLE') {
+            stack.push({
+                title: line.substring(8).trim(),
+                jcamp: line + '\n',
+                children: []
+            });
+            current = stack[stack.length - 1];
+        } else if (line.substring(0, 5) === '##END') {
+            var finished = stack.pop();
+            if (stack.length !== 0) {
+                current = stack[stack.length - 1];
+                current.children.push(finished);
+            } else {
+                current = undefined;
+                result.push(finished);
+            }
+        } else if (current && current.jcamp) {
+            current.jcamp += line + '\n';
+            if (line.substring(0, 10) === '##DATATYPE') {
+                current.dataType = line.substring(11).trim();
+            }
+        }
+    }
+
+    return result;
+}
+
 module.exports = {
-    convert: JcampConverter
+    convert: JcampConverter,
+    createTree: createTree
 };
