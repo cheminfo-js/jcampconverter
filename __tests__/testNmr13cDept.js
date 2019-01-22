@@ -41,4 +41,8 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
   it('has a shiftOffsetVal parameter for "NMR SPECTRUM"', () => {
     expect(nmrTarget.shiftOffsetVal).toBe(235.4936);
   });
+
+  it('has a sampleDescription', () => {
+    expect(paTarget.sampleDescription).toBe('This is a test.');
+  });
 });

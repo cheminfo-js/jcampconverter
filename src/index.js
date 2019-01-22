@@ -301,6 +301,8 @@ function getConverter() {
         spectrum.pageValue = parseFloat(dataValue);
       } else if (isMSField(dataLabel)) {
         spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
+      } else if (dataLabel === 'SAMPLEDESCRIPTION') {
+        spectrum.sampleDescription = dataValue;
       }
       if (dataLabel.match(options.keepRecordsRegExp)) {
         result.info[dataLabel] = dataValue.trim();
