@@ -2,7 +2,12 @@
 
 var parseXYDataRegExp = require('./parseXYData.js');
 
-
+const defaultOptions = {
+    keepRecordsRegExp: /^$/,
+    useNcProc: false,
+    withoutXY: false,
+    xy: false
+}
 function getConverter() {
 
     // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
@@ -24,12 +29,13 @@ function getConverter() {
     }
 
     function convert(jcamp, options) {
-        options = options || {};
-
-        var keepRecordsRegExp = /^$/;
-        if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
-        var wantXY = !options.withoutXY;
-
+        options = Object.assign({}, defaultOptions, options);
+        var {
+            keepRecordsRegExp,
+            withoutXY,
+            useNcProc
+        } = options;
+        
         var start = Date.now();
 
         var ntuples = {},
@@ -76,7 +82,6 @@ function getConverter() {
                 dataValue = '';
             }
             dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
-
             if (dataLabel === 'DATATABLE') {
                 endLine = dataValue.indexOf('\n');
                 if (endLine === -1) endLine = dataValue.indexOf('\r');
@@ -127,7 +132,7 @@ function getConverter() {
             }
 
             if (dataLabel === 'XYDATA') {
-                if (wantXY) {
+                if (!withoutXY) {
                     prepareSpectrum(result, spectrum);
                     // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                     if (dataValue.match(/.*\+\+.*/)) {
@@ -147,7 +152,7 @@ function getConverter() {
                 }
                 continue;
             } else if (dataLabel === 'PEAKTABLE') {
-                if (wantXY) {
+                if (!withoutXY) {
                     prepareSpectrum(result, spectrum);
                     parsePeakTable(spectrum, dataValue, result);
                     spectra.push(spectrum);
@@ -248,6 +253,9 @@ function getConverter() {
                 spectrum.pageValue = parseFloat(dataValue);
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
+            } else if (dataLabel === '$NCPROC') {
+                spectrum.ncProc = parseInt(dataValue);
+                if (!useNcProc) spectrum.ncProc = 0;
             }
             if (dataLabel.match(keepRecordsRegExp)) {
                 result.info[dataLabel] = dataValue.trim();
@@ -273,7 +281,7 @@ function getConverter() {
             result.ntuples = newNtuples;
         }
 
-        if (result.twoD && wantXY) {
+        if (result.twoD && !withoutXY) {
             add2D(result, options);
             if (result.profiling) result.profiling.push({
                 action: 'Finished countour plot calculation',
@@ -289,7 +297,7 @@ function getConverter() {
             options.xy = true;
         }
 
-        if (options.xy && wantXY) { // the spectraData should not be a oneD array but an object with x and y
+        if (options.xy && !withoutXY) { // the spectraData should not be a oneD array but an object with x and y
             if (spectra.length > 0) {
                 for (var i = 0; i < spectra.length; i++) {
                     var spectrum = spectra[i];
@@ -314,7 +322,7 @@ function getConverter() {
         }
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (isGCMS && wantXY) {
+        if (isGCMS && !withoutXY) {
             if (options.newGCMS) {
                 addNewGCMS(result);
             } else {
@@ -417,6 +425,7 @@ function getConverter() {
     function prepareSpectrum(result, spectrum) {
         if (!spectrum.xFactor) spectrum.xFactor = 1;
         if (!spectrum.yFactor) spectrum.yFactor = 1;
+        if (spectrum.ncProc) spectrum.yFactor *= Math.pow(2, spectrum.ncProc);
         if (spectrum.observeFrequency) {
             if (spectrum.xUnit && spectrum.xUnit.toUpperCase() === 'HZ') {
                 spectrum.xUnit = 'PPM';
@@ -624,8 +633,8 @@ function getConverter() {
         // TODO need to deal with result
         //  console.log(value);
         // we check if deltaX is defined otherwise we calculate it
-
         var yFactor = spectrum.yFactor;
+
         var deltaX = spectrum.deltaX;
 
 
