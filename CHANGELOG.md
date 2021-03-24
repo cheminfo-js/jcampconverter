@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.8.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.7.0...v7.8.0) (2021-03-24)
+
+
+### Features
+
+* improve 2D noise detection by using the full 2D spectrum ([7607af3](https://www.github.com/cheminfo/jcampconverter/commit/7607af3940945d9e794bf926a09e2e90b4d9efdf))
+
+
+### Bug Fixes
+
+* update dependencies and readme ([65d11ec](https://www.github.com/cheminfo/jcampconverter/commit/65d11eca3b79ff84f28a0e48e7270fbc24242ae1))
+
 ## [7.7.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.6...v7.7.0) (2021-02-10)
 
 
