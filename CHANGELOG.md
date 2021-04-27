@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.9.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.8.0...v7.9.0) (2021-04-27)
+
+
+### Features
+
+* parse special 'org.cheminfo.meta' LDR as a JSON ([2fe8d53](https://www.github.com/cheminfo/jcampconverter/commit/2fe8d539afaf35b69e6cef89431ab05beb5da5ea))
+
 ## [7.8.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.7.0...v7.8.0) (2021-03-24)
 
 
