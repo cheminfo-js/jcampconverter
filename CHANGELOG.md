@@ -1,5 +1,23 @@
 # Changelog
 
+## [8.0.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.10.0...v8.0.0) (2021-04-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* matrix node 12, 14 and 16 and remove node 10 support
+
+### Features
+
+* jcamp may also be an ArrayBuffer and not only a string ([58b2a38](https://www.github.com/cheminfo/jcampconverter/commit/58b2a3813b8b368d4f72f13f65f086b1f321ce43))
+
+
+### Bug Fixes
+
+* matrix node 12, 14 and 16 and remove node 10 support ([a17e88b](https://www.github.com/cheminfo/jcampconverter/commit/a17e88b76c9858885fd0c2518dbb952e1b8d0046))
+* matrix node 12, 14 and 16 and remove node 10 support ([97de895](https://www.github.com/cheminfo/jcampconverter/commit/97de895f2891aaa7f3956d06311f566626258982))
+* test matrix node 12, 14 and 16 ([8e861f3](https://www.github.com/cheminfo/jcampconverter/commit/8e861f353fdbba725939f879609d1555e87137c0))
+
 ## [7.10.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.9.0...v7.10.0) (2021-04-27)
 
 
