@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.10.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.9.0...v7.10.0) (2021-04-27)
+
+
+### Features
+
+* simplify ORG.CHEMINFO comment. Iif ##$cheminfo parsed the JSON in meta.cheminfo property ([2c65658](https://www.github.com/cheminfo/jcampconverter/commit/2c65658331103f4552ffa7def310e695911424c3))
+
+
+### Bug Fixes
+
+* remote ORG.CHEMINFO.META LDR from meta ([20c5467](https://www.github.com/cheminfo/jcampconverter/commit/20c54673a9d5f8dd666ed4dd58f460002bd405b8))
+
 ## [7.9.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.8.0...v7.9.0) (2021-04-27)
 
 
