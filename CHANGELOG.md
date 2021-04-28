@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.0.2](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.1...v8.0.2) (2021-04-28)
+
+
+### Bug Fixes
+
+* update ensure-text library ([fbda58e](https://www.github.com/cheminfo/jcampconverter/commit/fbda58eee6fc127141930e9c160b468ddeedf23b))
+
 ### [8.0.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.0...v8.0.1) (2021-04-28)
 
 
