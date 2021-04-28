@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.0.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.0...v8.0.1) (2021-04-28)
+
+
+### Bug Fixes
+
+* noesy without nucleus ([eb9a7b7](https://www.github.com/cheminfo/jcampconverter/commit/eb9a7b7faf13dfa52e1c78b7ec638efcf18ee364))
+
 ## [8.0.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.10.0...v8.0.0) (2021-04-27)
 
 
