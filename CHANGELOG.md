@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.0](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.2...v8.1.0) (2021-05-05)
+
+
+### Features
+
+* remove the cheminfo hack that was parsing cheminfo meta ([1fe8dd5](https://www.github.com/cheminfo/jcampconverter/commit/1fe8dd51c97a98c65818c4f4af712d6c377969e0))
+
 ### [8.0.2](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.1...v8.0.2) (2021-04-28)
 
 
