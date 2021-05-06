@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.1.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.0...v8.1.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* bug in linked spectra and reference ([ec63494](https://www.github.com/cheminfo/jcampconverter/commit/ec63494433b865dc3ed7589763d32afbbc1d2c60))
+
 ## [8.1.0](https://www.github.com/cheminfo/jcampconverter/compare/v8.0.2...v8.1.0) (2021-05-05)
 
 
