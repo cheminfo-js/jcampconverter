@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.1.2](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.1...v8.1.2) (2021-05-27)
+
+
+### Bug Fixes
+
+* more selective to generate 2D ([ee81f1f](https://www.github.com/cheminfo/jcampconverter/commit/ee81f1f2be91411c2dd8f9324c19405aa582b7c9))
+
 ### [8.1.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.0...v8.1.1) (2021-05-06)
 
 
