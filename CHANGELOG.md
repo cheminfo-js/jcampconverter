@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.1.3](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.2...v8.1.3) (2021-06-18)
+
+
+### Bug Fixes
+
+* prevent isNaN with dynamicTyping ([c171dcf](https://www.github.com/cheminfo/jcampconverter/commit/c171dcf0c1f9891bf85435c6693aec9c54a98c01))
+
 ### [8.1.2](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.1...v8.1.2) (2021-05-27)
 
 
