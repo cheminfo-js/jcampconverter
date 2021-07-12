@@ -1,5 +1,12 @@
 # Changelog
 
+### [8.1.4](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.3...v8.1.4) (2021-07-12)
+
+
+### Bug Fixes
+
+* reelase for Zenodo DOI ([973ed64](https://www.github.com/cheminfo/jcampconverter/commit/973ed64d3be6fb1ec1c4830a791b9ee901479f67))
+
 ### [8.1.3](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.2...v8.1.3) (2021-06-18)
 
 
